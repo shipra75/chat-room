@@ -27,6 +27,123 @@
 .App-link {
   color: #61dafb;
 }
+.ChatRoom {
+  max-width: 400px;
+  max-height: 1000px;
+  background-color: green; 
+  color: white; 
+  padding: 8px 16px;
+  border: none; 
+  border-radius: 8px; 
+  cursor: pointer;
+}
+
+.join {
+  background-color: gray;
+  color: white;
+  padding: 8px 16px;
+  border: none; 
+  border-radius: 8px;
+  margin-left:40px;
+  cursor: pointer;
+}
+
+.chatButtons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 16px;
+}
+.nicknameBox,
+.joinBox {
+  margin-top: 10px;
+  padding: 15px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.chatContainer {
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: white;
+  text-align: center;
+}
+
+.chatBox {
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  padding: 10px;
+  background: #f9f9f9;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+.message {
+  padding: 8px;
+  margin: 5px 0;
+  border-radius: 5px;
+  word-break: break-word;
+}
+
+.ownMessage {
+  background: #d1e7dd;
+  text-align: right;
+}
+
+.otherMessage {
+  background: #f8d7da;
+  text-align: left;
+}
+
+.timestamp {
+  font-size: 12px;
+  color: gray;
+  margin-left: 8px;
+}
+
+.noMessages {
+  color: gray;
+  font-style: italic;
+}
+
+.messageInput {
+  display: flex;
+  gap: 10px;
+}
+
+.messageInput input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.messageInput button {
+  padding: 8px 16px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.messageInput button:hover {
+  background: #0056b3;
+}
+
 
 @keyframes App-logo-spin {
   from {
