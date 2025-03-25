@@ -66,9 +66,10 @@
   align-items: flex-start;
 }
 .chatContainer {
-  max-width: 600px;
+  max-width: 1000px;
   margin: 20px auto;
   padding: 20px;
+  max-height: 2000px;
   border: 1px solid #ddd;
   border-radius: 8px;
   background: white;
