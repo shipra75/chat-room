@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import "./App.css";
 
 const HomePage: React.FC = () => {
   const [showNicknameBox, setShowNicknameBox] = useState<boolean>(false);
   const [showJoinBox, setShowJoinBox] = useState<boolean>(false);
   const [nickname, setNickname] = useState<string>("");
   const [roomId, setRoomId] = useState<string>("");
+
   const navigate = useNavigate();
   const handleCreateRoomClick = () => {
     setShowNicknameBox(true);
