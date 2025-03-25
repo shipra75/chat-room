@@ -85,27 +85,51 @@
   margin-bottom: 10px;
 }
 
-.message {
-  padding: 8px;
-  margin: 5px 0;
-  border-radius: 5px;
-  word-break: break-word;
+.messageContainer {
+  display: flex;
+  justify-content: flex-start;
+  margin: 10px 0;
 }
 
 .ownMessage {
-  background: #d1e7dd;
+  justify-content: flex-end;
+}
+
+.messageCard {
+  background: #f3f4f6; /* Light gray background */
+  padding: 10px;
+  border-radius: 10px;
+  max-width: 70%;
+  min-width: 30%;
+  word-wrap: break-word;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.ownMessage .messageCard {
+  background: #dcfce7; /* Light green for user’s own messages */
   text-align: right;
 }
 
-.otherMessage {
-  background: #f8d7da;
+.otherMessage .messageCard {
+  background: #e5e7eb; /* Light gray for other users */
   text-align: left;
+}
+
+.nickname {
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #374151; /* Dark gray */
+}
+
+.messageBody {
+  font-size: 14px;
+  color: #111827; /* Almost black */
 }
 
 .timestamp {
   font-size: 12px;
-  color: gray;
-  margin-left: 8px;
+  color: #6b7280; /* Gray */
+  margin-top: 5px;
 }
 
 .noMessages {

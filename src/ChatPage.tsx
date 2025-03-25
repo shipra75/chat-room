@@ -11,18 +11,20 @@ import {
 // Define the expected structure for sending messages
 interface SendMessageData {
   body: string;
+  userNickname: string;
+  userIcon?: string;
 }
 
 const ChatPage: React.FC = () => {
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const nickname = params.get("nickname") || "Anonymous";
-  const roomid = params.get("roomId") || "Anonymous";
+  const roomidFromURL = params.get("roomId"); // Room ID from URL
   const [messages, setMessages] = useState<SessionChatMessage[]>([]);
   const [newMessage, setNewMessage] = useState<string>("");
   const chatBoxRef = useRef<HTMLDivElement | null>(null);
   const [client, setClient] = useState<TelepartyClient | null>(null);
-  const [roomId, setRoomId] = useState<string>(roomid);
+  const [roomId, setRoomId] = useState<string | null>(roomidFromURL);
 
   // Define WebSocket event handlers
   const eventHandler: SocketEventHandler = {
@@ -33,7 +35,7 @@ const ChatPage: React.FC = () => {
       console.warn("⚠️ WebSocket connection closed");
     },
     onMessage: (message: any) => {
-      console.log('message', message)
+      console.log('message123', message)
       if (message?.type === SocketMessageTypes.SEND_MESSAGE) {
         const chatMessage: SessionChatMessage = {
           isSystemMessage: false,
@@ -41,7 +43,7 @@ const ChatPage: React.FC = () => {
           userNickname: message.data.userNickname || "Unknown",
           body: message.data.body || "",
           permId: message.data.permId || Math.random().toString(36).substring(7),
-          timestamp: message.timestamp || Date.now(),
+          timestamp: message.data.timestamp || Date.now(),
         };
 
         setMessages((prevMessages) => [...prevMessages, chatMessage]);
@@ -52,32 +54,36 @@ const ChatPage: React.FC = () => {
   useEffect(() => {
     const tpClient = new TelepartyClient(eventHandler);
     setClient(tpClient);
+
     const initializeChat = async () => {
       try {
-        console.log("Creating room...")
-        const createdRoomId = await tpClient.createChatRoom(nickname,"public/computing.png");
-        setRoomId(createdRoomId);
-          console.log('roomId', roomId)
-        const previousMessages = await tpClient.joinChatRoom(nickname, createdRoomId,"public/computing.png");
-        console.log('previousMessages', previousMessages)
+        if (!roomId) {
+          const createdRoomId = await tpClient.createChatRoom(nickname, "public/computing.png");
+          setRoomId(createdRoomId);
+        }
+        const previousMessages = await tpClient.joinChatRoom(nickname, roomId!, "public/computing.png");
         if (previousMessages && Array.isArray(previousMessages.messages)) {
           setMessages(previousMessages.messages as SessionChatMessage[]);
         }
       } catch (error) {
-        console.error("Error initializing chat:", error);
+        console.error("❌ Error initializing chat:", error);
       }
     };
     setTimeout(initializeChat, 2000);
     return () => {
       tpClient.teardown();
     };
-  }, [nickname]);
+  }, [roomId, nickname]); // Depend on `roomId` to ensure correct joining
 
   const handleSendMessage = () => {
     if (newMessage.trim() !== "" && client) {
-      const messageData: SendMessageData = { body: newMessage };
-      console.log('newMessage', newMessage)
-      console.log('messageData', messageData)
+      const messageData: SendMessageData = {
+        body: newMessage,
+        userNickname: nickname, 
+        userIcon: "public/computing.png", 
+      };
+
+      console.log("📤 Sending message:", messageData);
       client.sendMessage(SocketMessageTypes.SEND_MESSAGE, messageData);
       setNewMessage("");
     }
@@ -105,9 +111,13 @@ const ChatPage: React.FC = () => {
           <p className="noMessages">No messages yet. Start the conversation!</p>
         ) : (
           messages.map((msg, index) => (
-            <div key={index} className={`message ${msg.userNickname === nickname ? "ownMessage" : "otherMessage"}`}>
-              <strong>{msg.userNickname}:</strong> {msg.body} <span className="timestamp">{new Date(msg.timestamp).toLocaleTimeString()}</span>
+            <div key={index} className={`messageContainer ${msg.userNickname === nickname ? "ownMessage" : "otherMessage"}`}>
+            <div className="messageCard">
+              <div className="nickname">{msg.userNickname}</div>
+              <div className="messageBody">{msg.body}</div>
+              <div className="timestamp">{new Date(msg.timestamp).toLocaleTimeString()}</div>
             </div>
+          </div>
           ))
         )}
       </div>
