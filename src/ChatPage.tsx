@@ -54,40 +54,56 @@ const ChatPage: React.FC = () => {
   useEffect(() => {
     const tpClient = new TelepartyClient(eventHandler);
     setClient(tpClient);
-
+  
     const initializeChat = async () => {
       try {
-        if (!roomId) {
-          const createdRoomId = await tpClient.createChatRoom(nickname, "public/computing.png");
-          setRoomId(createdRoomId);
+        let currentRoomId = roomId || localStorage.getItem("chatRoomId");
+       let storedMessages 
+        if (!currentRoomId) {
+          currentRoomId = await tpClient.createChatRoom(nickname, "public/computing.png");
+          localStorage.setItem("chatRoomId", currentRoomId);
+          setRoomId(currentRoomId);
+          storedMessages = localStorage.getItem(`chatMessages_${currentRoomId}`);
+          if (storedMessages) {
+            setMessages(JSON.parse(storedMessages));
+          }
+        } else {
+          setRoomId(currentRoomId);
         }
-        const previousMessages = await tpClient.joinChatRoom(nickname, roomId!, "public/computing.png");
+        const previousMessages = await tpClient.joinChatRoom(nickname, currentRoomId, "public/computing.png");
         if (previousMessages && Array.isArray(previousMessages.messages)) {
-          setMessages(previousMessages.messages as SessionChatMessage[]);
+          const filteredMessages = previousMessages.messages.filter(
+            (msg) => !(msg.isSystemMessage && msg.body.includes("joined the party"))
+          );
+          const allMessages = [...JSON.parse(storedMessages || "[]"), ...filteredMessages];
+  
+          setMessages(allMessages);
+          localStorage.setItem(`chatMessages_${currentRoomId}`, JSON.stringify(allMessages));
         }
       } catch (error) {
         console.error("❌ Error initializing chat:", error);
       }
     };
+  
     setTimeout(initializeChat, 2000);
+  
     return () => {
       tpClient.teardown();
     };
-  }, [roomId, nickname]); // Depend on `roomId` to ensure correct joining
-
+  }, [nickname, roomId]);
+  
   const handleSendMessage = () => {
     if (newMessage.trim() !== "" && client) {
       const messageData: SendMessageData = {
         body: newMessage,
-        userNickname: nickname, 
-        userIcon: "public/computing.png", 
+        userNickname: nickname,
+        userIcon: "public/computing.png",
       };
-
-      console.log("📤 Sending message:", messageData);
       client.sendMessage(SocketMessageTypes.SEND_MESSAGE, messageData);
-      setNewMessage("");
+       setNewMessage("");
     }
   };
+  
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
